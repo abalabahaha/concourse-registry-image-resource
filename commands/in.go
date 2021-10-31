@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	resource "github.com/concourse/registry-image-resource"
+	resource "github.com/abalabahaha/concourse-registry-image-resource"
 	"github.com/fatih/color"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"

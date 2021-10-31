@@ -6,9 +6,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
+	resource "github.com/abalabahaha/concourse-registry-image-resource"
 	"github.com/aws/aws-sdk-go/service/ecr"
 	"github.com/aws/aws-sdk-go/service/ecr/ecriface"
-	resource "github.com/concourse/registry-image-resource"
 )
 
 var _ = Describe("Source", func() {

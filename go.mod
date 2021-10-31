@@ -1,4 +1,4 @@
-module github.com/concourse/registry-image-resource
+module github.com/abalabahaha/concourse-registry-image-resource
 
 require (
 	github.com/Masterminds/semver v1.5.0

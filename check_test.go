@@ -17,7 +17,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
 
-	resource "github.com/concourse/registry-image-resource"
+	resource "github.com/abalabahaha/concourse-registry-image-resource"
 )
 
 var _ = Describe("Check", func() {

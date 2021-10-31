@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/concourse/registry-image-resource/commands"
+	"github.com/abalabahaha/concourse-registry-image-resource/commands"
 	"github.com/fatih/color"
 	"github.com/sirupsen/logrus"
 )
