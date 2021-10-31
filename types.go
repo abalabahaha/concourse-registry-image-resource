@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -21,6 +22,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ecr/ecriface"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	"github.com/sirupsen/logrus"
@@ -69,6 +71,16 @@ type BasicCredentials struct {
 	Password string `json:"password,omitempty"`
 }
 
+const (
+	DefaultPlatformArchitecture = runtime.GOARCH
+	DefaultPlatformOS           = runtime.GOOS
+)
+
+type PlatformField struct {
+	Architecture string `json:"architecture,omitempty"`
+	OS           string `json:"os,omitempty"`
+}
+
 type RegistryMirror struct {
 	Host string `json:"host,omitempty"`
 
@@ -85,7 +97,8 @@ type Source struct {
 
 	SemverConstraint string `json:"semver_constraint,omitempty"`
 
-	Tag Tag `json:"tag,omitempty"`
+	RawPlatform PlatformField `json:"platform,omitempty"`
+	Tag         Tag           `json:"tag,omitempty"`
 
 	BasicCredentials
 	AwsCredentials
@@ -183,7 +196,16 @@ func (source Source) AuthOptions(repo name.Repository, scopeActions []string) ([
 		return nil, fmt.Errorf("initialize transport: %w", err)
 	}
 
-	return []remote.Option{remote.WithAuth(auth), remote.WithTransport(rt)}, nil
+	platform := source.Platform()
+
+	return []remote.Option{
+		remote.WithAuth(auth),
+		remote.WithTransport(rt),
+		remote.WithPlatform(v1.Platform{
+			Architecture: platform.Architecture,
+			OS:           platform.OS,
+		}),
+	}, nil
 }
 
 func (source Source) NewRepository() (name.Repository, error) {
@@ -289,6 +311,20 @@ func (source *Source) Metadata() []MetadataField {
 			Value: source.Repository,
 		},
 	}
+}
+
+func (source *Source) Platform() PlatformField {
+	p := source.RawPlatform
+
+	if p.Architecture == "" {
+		p.Architecture = DefaultPlatformArchitecture
+	}
+
+	if p.OS == "" {
+		p.OS = DefaultPlatformOS
+	}
+
+	return p
 }
 
 func (source *Source) AuthenticateToECR() bool {
